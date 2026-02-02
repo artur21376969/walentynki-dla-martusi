@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Walentynki 💖</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      overflow: hidden;
+      text-align: center;
+      position: relative;
+    }
+
+    h1 {
+      color: #8b0000;
+      margin: 20px;
+      padding: 0 16px;
+      z-index: 5;
+    }
+
+    .sticker {
+      width: 220px;
+      max-width: 80vw;
+      min-height: 180px;
+      height: auto;
+      margin-bottom: 20px;
+      z-index: 10;
+      position: relative;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      z-index: 5;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      border-radius: 14px;
+      padding: 14px 28px;
+      font-size: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    #yesBtn { background-color: #ff4d6d; color: white; }
+    #noBtn { background-color: #ffffff; color: #333; }
+
+    .final {
+      font-size: 26px;
+      color: #8b0000;
+      padding: 20px;
+    }
+
+    .heart {
+      position: absolute;
+      top: -10px;
+      color: rgba(255, 0, 80, 0.6);
+      font-size: 20px;
+      animation: fall linear infinite;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    @keyframes fall {
+      to { transform: translateY(110vh); }
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 22px; }
+      button { font-size: 18px; padding: 12px 22px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- GIF startowy -->
+  <img id="sticker" class="sticker" src="start.gif" alt="naklejka" />
+
+  <h1 id="question">
+    <span id="mainText">Kochana Martusiu, czy zechcesz być moją walentynką? 💕</span><br />
+    <span id="countdown" style="font-size:16px; display:block; margin-top:10px;"></span>
+  </h1>
+
+  <div class="buttons" id="buttons">
+    <button id="yesBtn">TAK</button>
+    <button id="noBtn">NIE</button>
+  </div>
+
+  <script>
+    const noBtn = document.getElementById('noBtn');
+    const yesBtn = document.getElementById('yesBtn');
+    const mainText = document.getElementById('mainText');
+    const sticker = document.getElementById('sticker');
+    const buttons = document.getElementById('buttons');
+
+    let noClicks = 0;
+    const noTexts = [
+      'Czy jesteś tego pewna? 🥺',
+      'Na pewno? 💔',
+      'Daj mi jeszcze jedną szansę 😢',
+      'Serio serio? 😭',
+      'Ostatnia szansa… 🥹'
+    ];
+
+    function loadSticker(url) {
+      sticker.src = url;
+    }
+
+    noBtn.addEventListener('click', () => {
+      noClicks++;
+
+      if (noClicks === 1) loadSticker('sad.gif');
+      if (noClicks <= noTexts.length) mainText.textContent = noTexts[noClicks - 1];
+
+      const maxX = window.innerWidth - noBtn.offsetWidth;
+      const maxY = window.innerHeight - noBtn.offsetHeight;
+      noBtn.style.position = 'absolute';
+      noBtn.style.left = Math.random() * maxX + 'px';
+      noBtn.style.top = Math.random() * maxY + 'px';
+
+      noBtn.style.transform = `scale(${Math.max(0.1, 1 - noClicks * 0.2)})`;
+      yesBtn.style.transform = `scale(${1 + noClicks * 0.25})`;
+
+      if (noClicks >= 5) {
+        noBtn.remove();
+        yesBtn.style.width = '50vw';
+        yesBtn.style.height = '25vh';
+        yesBtn.style.fontSize = '36px';
+      }
+    });
+
+    yesBtn.addEventListener('click', () => {
+      loadSticker('happy.gif');
+      document.getElementById('question').innerHTML =
+        'Wiedziałem kochanie, że się zgodzisz!!! 💖<br/>Kocham cię bardzo myszko!! 🐭❤️';
+      buttons.remove();
+    });
+
+    function createHeart() {
+      const heart = document.createElement('div');
+      heart.className = 'heart';
+      heart.textContent = '❤️';
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.animationDuration = 3 + Math.random() * 5 + 's';
+      heart.style.fontSize = 14 + Math.random() * 20 + 'px';
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 8000);
+    }
+    setInterval(createHeart, 300);
+
+    const countdownEl = document.getElementById('countdown');
+    function updateCountdown() {
+      const now = new Date();
+      const year = now.getMonth() > 1 ? now.getFullYear() + 1 : now.getFullYear();
+      const valentines = new Date(year, 1, 14);
+      const diff = valentines - now;
+
+      if (diff <= 0) {
+        countdownEl.textContent = 'Dziś są Walentynki ❤️';
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+
+      countdownEl.textContent = `Do Walentynek zostało: ${days} dni ${hours}h ${minutes}m 💕`;
+    }
+    updateCountdown();
+    setInterval(updateCountdown, 60000);
+  </script>
+
+</body>
+</html>
